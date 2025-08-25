@@ -1,0 +1,210 @@
+/* === Global Styles === */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffe3c2;
+    overflow-x: hidden;
+}
+
+/* === Sidebar Styles === */
+.sidebar {
+    height: 100vh;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: -220px;
+    background-color: #ffe3c22c;
+    color: #350410de;
+    transition: left 0.3s ease;
+    padding-top: 60px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.sidebar a {
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #350410;
+    display: block;
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.sidebar a:hover {
+    background-color: #350410d0;
+    color: white;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+/* === Toggle Button (Hamburger) === */
+.menu-toggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 28px;
+    height: 4px;
+    margin: 6px 0;
+    background-color: #350410;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* === Main Content === */
+.main-content {
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    position: relative;
+    z-index: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background-color: #fff8f2;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* === Heading === */
+h2 {
+    text-align: center;
+    color: #350410;
+    margin-bottom: 30px;
+}
+
+/* === Table Styles === */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    table-layout: fixed;
+}
+
+th,
+td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+    color: #350410;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #350410de;
+    color: white;
+}
+
+tr:hover {
+    background-color: #fff0e5;
+}
+
+/* === Button Styles === */
+#back-btn,
+#cash-payment-btn {
+    margin-bottom: 20px;
+    background: #350410;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#cashier-code-display {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #350410;
+}
+.admin-heading {
+    text-align: center;
+    font-size: 2rem;
+    color: #350410;
+    margin-bottom: 20px;
+    text-decoration-line: underline;
+    margin-bottom: 25px;
+    margin-top: -10px;
+}
+
+
+/* === Responsive Table on Mobile === */
+@media (max-width: 768px) {
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    td {
+        padding: 10px 10px 10px 50%;
+        text-align: left;
+        position: relative;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        top: 10px;
+        font-weight: bold;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .main-content {
+        padding: 15px;
+        margin-top: 50px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    #back-btn,
+    #cash-payment-btn {
+        width: 100%;
+        font-size: 1rem;
+    }
+}

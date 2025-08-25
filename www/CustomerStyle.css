@@ -1,0 +1,465 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffe3c2;
+    overflow-x: hidden;
+    /* Prevent horizontal overflow */
+}
+
+.menu-toggle {
+    cursor: pointer;
+    z-index: 1001;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background-color: #ffffffde;
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: 0.4s;
+    transform-origin: center;
+}
+
+
+/* Cross (X) animation */
+.menu-toggle.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.container {
+    display: flex;
+    /* Use flex for layout */
+    height: 100vh;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: -200px;
+    width: 200px;
+    height: 100%;
+    background-color: #ffe3c22c;
+    color: #350410de;
+    font-size: 1rem;
+    font-weight: 600;
+    padding-top: 60px;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    padding: 15px 20px;
+    cursor: pointer;
+
+}
+
+nav.active {
+    left: 0;
+    /* Show nav when active */
+}
+
+.heading {
+    background-color: #350410de;
+    height: 60px;
+    color: white;
+    padding-top: 14px;
+    margin: 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.page {
+    flex: 1;
+    /* Allow the page to take remaining space */
+    display: flex;
+    flex-direction: column;
+    /* Stack elements vertically */
+    align-items: center;
+    /* Center align items */
+    padding: 20px;
+    /* Add padding to prevent content from touching edges */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    /* Make table responsive */
+    max-width: 600px;
+    /* Limit max width */
+}
+
+th,
+td {
+    border: 3px solid #350410de;
+    padding: 6px;
+    text-align: center;
+    font-size: 1rem;
+    /* Use relative units for font size */
+    word-wrap: break-word;
+    /* Prevent overflow of text */
+}
+
+th {
+    background-color: #f2f2f2;
+    /* Optional: Add background color for header */
+}
+
+#scanner-container {
+    margin-top: 20px;
+    display: none;
+    /* Initially hidden */
+    height: fit-content;
+    height: 50px;
+    width: 250px;
+    margin-bottom: 230px;
+
+}
+
+#video {
+    padding: 0px;
+}
+
+.list-content {
+    margin-top: 10px;
+}
+
+#scan-btn:hover,
+#online-btn:hover,
+#cash-btn:hover,
+#stop-scan-btn:hover {
+    background-color: #ffffff;
+    /* Change background on hover */
+    color: #350410de;
+    /* Change text color on hover */
+    border: 2px solid #350410de;
+    /* Change border color on hover */
+}
+
+.qty-btn {
+    margin: 0 5px;
+    padding: 2px 6px;
+}
+
+.list-head {
+    text-align: center;
+    font-size: 1.5rem;
+    /* Use relative units for font size */
+    color: #350410de;
+}
+
+#cash-btn,
+#online-btn,
+#scan-btn,
+#stop-scan-btn {
+    background-color: #350410de;
+    /* Button background color */
+    color: white;
+    /* Button text color */
+    border: 2px solid #350410de;
+    /* Button border color */
+    font-weight: 600;
+    border-radius: 9px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    /* Use relative units for font size */
+    padding: 10px 20px;
+    margin: 5px 0;
+    /* Reduced margin to minimize space */
+}
+
+.payment-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
+    /* Adjust margin for spacing */
+}
+
+#video {
+    height: 300px;
+    border: 2px solid #350410de;
+    /* Video border color */
+    border-radius: 20px;
+    /* Video border radius */
+    width: 100%;
+    /* Make video responsive */
+    max-width: 400px;
+    /* Limit max width */
+}
+
+.qty-btn {
+    margin: 0 4px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #350410de;
+    background-color: white;
+    color: #350410de;
+    cursor: pointer;
+}
+
+.width-increase {
+    width: 100%;
+    /* Ensure full width for table rows */
+}
+
+.qty-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.qty-value {
+    min-width: 20px;
+    text-align: center;
+}
+
+
+.scan-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
+    /* Reduced margin to minimize space */
+}
+
+/* Set fixed width for barcode column */
+td:nth-child(1) {
+    width: 150px;
+    /* Fixed width for barcode */
+}
+
+td:nth-child(2) {
+    width: 200px;
+    /* Fixed width for name */
+}
+
+td:nth-child(3) {
+    width: 100px;
+    /* Fixed width for price */
+}
+
+td:nth-child(4) {
+    width: 150px;
+    /* or more if needed */
+}
+
+
+td:nth-child(5) {
+    width: 100px;
+    /* Fixed width for total */
+}
+
+td:nth-child(6) {
+    width: 120px;
+    /* Fixed width for action */
+}
+
+.drawingBuffer {
+    display: none;
+    /* Hide the canvas element */
+}
+
+.customer-info {
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.customer-info input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 2px solid #350410de;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.customer-info label {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* verification style */
+#verify-section {
+    background-color: #fff8f2;
+    border: 2px solid #350410;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    margin: 30px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    margin-top: 30px;
+}
+
+#verify-section label {
+    display: block;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #350410;
+}
+
+#verify-section input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    border: 2px solid #350410;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+#verify-section button {
+    background-color: #350410;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin: 0 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#verify-section button:hover {
+    background-color: #5a1a15;
+}
+
+
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        /* Stack elements vertically on small screens */
+        padding: 10px;
+        /* Add padding for better spacing */
+    }
+
+    nav {
+        width: 200px;
+        /* Ensure full width on mobile */
+        left: -100%;
+        /* Hide nav off-screen */
+        transition: left 0.3s ease;
+        /* Smooth transition for nav */
+    }
+
+    nav.active {
+        left: 0;
+        /* Show nav */
+    }
+
+    .page {
+        margin-left: 0;
+        /* Reset margin for mobile */
+        padding: 10px;
+        /* Add padding for better spacing */
+    }
+
+    table {
+        width: 100%;
+        /* Make table full width */
+        font-size: 0.9rem;
+        /* Smaller font size for mobile */
+        border-collapse: collapse;
+        /* Collapse borders for better appearance */
+    }
+
+    th,
+    td {
+        padding: 8px;
+        /* Add padding to table cells */
+        text-align: left;
+        /* Align text to the left */
+        border: 1px solid #ddd;
+        /* Add border for clarity */
+    }
+
+    .list-head {
+        font-size: 1.2rem;
+        /* Adjust heading size for mobile */
+        margin-bottom: 10px;
+        /* Add margin below headings */
+    }
+
+    #cash-btn,
+    #online-btn,
+    #scan-btn,
+    #stop-scan-btn {
+        font-size: 0.9rem;
+        /* Adjust button size for mobile */
+        width: 100%;
+        /* Make buttons full width */
+        margin: 5px 0;
+        /* Add margin for spacing between buttons */
+        padding: 10px;
+        /* Increase padding for better touch targets */
+    }
+
+    /* Additional styles for better visibility */
+    body {
+        font-size: 16px;
+        /* Base font size for readability */
+        line-height: 1.5;
+        /* Improve line height for readability */
+    }
+
+    h1,
+    h2,
+    h3 {
+        margin: 10px 0;
+        /* Add margin for headings */
+    }
+
+    #scanner-container {
+        margin: 10px;
+        margin-bottom:180px;
+        flex-direction: column;
+        width: 90%;
+    }
+
+    #video {
+        width: 100%;
+        max-width: 100%;
+        height: 200px;
+    }
+
+    .jsPDF {
+        font-size: 0.8rem;
+    }
+}

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Purchase History</title>
+  <link rel="stylesheet" href="AdmitStyle.css" />
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+
+  <!-- Load config.js that sets backendBaseURL dynamically -->
+  <script src="js/config.js"></script>
+
+  <style>
+    h2 {
+      margin-top: 25px;
+      color: #350410de;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      background: white;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #350410de;
+      color: #fff;
+    }
+
+    .btn {
+      background: #350410de;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+
+    .btn:hover {
+      background: #5c0a1c;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar" id="sidebar">
+    <a href="#" onclick="showMainPage()">Home</a>
+    <a href="#" onclick="showCustomersOnly()">Customers</a>
+    <a href="adminlogin.html">Logout</a>
+  </div>
+
+  <div class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="main-content" id="mainContent">
+    <div class="container">
+      <h1 class="admin-heading">Smart Cart - Admin</h1>
+
+      <button id="back-btn" style="display:none;" onclick="backToHome()">Back</button>
+      <button id="cash-payment-btn" class="btn" onclick="showCashierCodes()">Show Cashier Codes</button>
+
+      <!-- Cashier Code Section -->
+      <div id="cashier-code-display" style="margin-top: 20px; display: none;">
+        <h2>Pending Cashier Codes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Mobile</th>
+              <th>Cashier Code</th>
+              <th>Date Created</th>
+            </tr>
+          </thead>
+          <tbody id="pending-code-body"></tbody>
+        </table>
+
+        <h2>Verified Cashier Codes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Mobile</th>
+              <th>Cashier Code</th>
+              <th>Date Verified</th>
+            </tr>
+          </thead>
+          <tbody id="verified-code-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Purchase Summary -->
+      <h2 id="summary-title">Customer Purchase History</h2>
+      <table id="summary-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Amount</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody id="summary-body"></tbody>
+      </table>
+
+      <!-- Product History -->
+      <h2 id="history-title">All Products Purchased</h2>
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Barcode</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+
+      <!-- Customer Table -->
+      <h2 id="customer-title" style="display:none;">All Customers</h2>
+      <table id="customer-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="customer-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+      document.getElementById("mainContent").classList.toggle("active");
+      document.querySelector(".menu-toggle").classList.toggle("open");
+    }
+
+    let cashierInterval, historyInterval;
+
+    // Load all cashier codes from CashierCodeHistory
+    async function loadAllCashierCodes() {
+      try {
+        const res = await fetch(`${backendBaseURL}/cashier-code-history`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        // Pending codes
+        const pendingBody = document.getElementById("pending-code-body");
+        const pendingCodes = data.history.filter(h => !h.verified);
+        pendingBody.innerHTML = pendingCodes.length
+          ? pendingCodes.map(h =>
+            `<tr>
+                <td>${h.mobile}</td>
+                <td>${h.cashierCode}</td>
+                <td>${new Date(h.createdAt).toLocaleString()}</td>
+              </tr>`).join('')
+          : `<tr><td colspan="3">No pending codes</td></tr>`;
+
+        // Verified codes
+        const verifiedBody = document.getElementById("verified-code-body");
+        const verifiedCodes = data.history.filter(h => h.verified);
+        verifiedBody.innerHTML = verifiedCodes.length
+          ? verifiedCodes.map(h =>
+            `<tr>
+                <td>${h.mobile}</td>
+                <td>${h.cashierCode}</td>
+                <td>${h.verifiedAt ? new Date(h.verifiedAt).toLocaleString() : '--'}</td>
+              </tr>`).join('')
+          : `<tr><td colspan="3">No verified codes</td></tr>`;
+      } catch (err) {
+        console.error("Cashier code load error", err);
+      }
+    }
+
+    // Show cashier codes section and hide others
+    function showCashierCodes() {
+      document.getElementById("summary-title").style.display = "none";
+      document.getElementById("history-title").style.display = "none";
+      document.getElementById("summary-table").style.display = "none";
+      document.getElementById("history-table").style.display = "none";
+      document.getElementById("customer-title").style.display = "none";
+      document.getElementById("customer-table").style.display = "none";
+
+      document.getElementById("cashier-code-display").style.display = "block";
+      document.getElementById("back-btn").style.display = "inline-block";
+
+      loadAllCashierCodes();
+      if (cashierInterval) clearInterval(cashierInterval);
+      cashierInterval = setInterval(loadAllCashierCodes, 5000);
+    }
+
+    // Load purchase history and product details
+    async function loadHistory() {
+      try {
+        const res = await fetch(`${backendBaseURL}/purchase-history`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        const historyBody = document.getElementById("history-body");
+        const summaryBody = document.getElementById("summary-body");
+        historyBody.innerHTML = "";
+        summaryBody.innerHTML = "";
+
+        data.history.forEach(entry => {
+          let total = 0;
+          entry.products.forEach(p => {
+            historyBody.innerHTML += `
+            <tr>
+              <td>${entry.name}</td>
+              <td>${p.barcode}</td>
+              <td>${p.name}</td>
+              <td>₹${p.price}</td>
+              <td>${p.quantity}</td>
+              <td>₹${p.price * p.quantity}</td>
+              <td>${new Date(entry.date).toLocaleDateString()}</td>
+            </tr>`;
+            total += p.price * p.quantity;
+          });
+
+          summaryBody.innerHTML += `
+          <tr>
+            <td>${entry.name}</td>
+            <td>${entry.mobile}</td>
+            <td>${new Date(entry.date).toLocaleDateString()}</td>
+            <td>${new Date(entry.date).toLocaleTimeString()}</td>
+            <td>₹${total}</td>
+            <td>${entry.paymentMethod} ${entry.paymentMethod === "cash" ? `(${entry.cashierCode})` : ""}</td>
+          </tr>`;
+        });
+      } catch (err) {
+        console.error("History load error", err);
+      }
+    }
+
+    // Show customers list only, hide others
+    async function showCustomersOnly() {
+      document.getElementById("summary-title").style.display = "none";
+      document.getElementById("history-title").style.display = "none";
+      document.getElementById("summary-table").style.display = "none";
+      document.getElementById("history-table").style.display = "none";
+
+      document.getElementById("customer-title").style.display = "block";
+      document.getElementById("customer-table").style.display = "table";
+
+      document.getElementById("cashier-code-display").style.display = "none";
+      document.getElementById("back-btn").style.display = "inline-block";
+
+      try {
+        const res = await fetch(`${backendBaseURL}/customers`);
+        const data = await res.json();
+        if (!data.success) return;
+        const tbody = document.getElementById("customer-body");
+        tbody.innerHTML = "";
+        data.customers.forEach(c => {
+          tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.mobile}</td><td>${c.email}</td></tr>`;
+        });
+      } catch (err) {
+        console.error("Customer load error", err);
+      }
+    }
+
+    // Back button to show main purchase history and hide others
+    function backToHome() {
+      document.getElementById("summary-title").style.display = "block";
+      document.getElementById("history-title").style.display = "block";
+      document.getElementById("summary-table").style.display = "table";
+      document.getElementById("history-table").style.display = "table";
+
+      document.getElementById("customer-title").style.display = "none";
+      document.getElementById("customer-table").style.display = "none";
+      document.getElementById("cashier-code-display").style.display = "none";
+
+      document.getElementById("back-btn").style.display = "none";
+
+      loadHistory();
+      if (cashierInterval) clearInterval(cashierInterval);
+    }
+
+    // Auto refresh purchase history every 5s
+    historyInterval = setInterval(loadHistory, 5000);
+
+    // Initial load
+    loadHistory();
+  </script>
+</body>
+
+</html>

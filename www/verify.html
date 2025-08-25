@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Verify Cashier Code</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: gap: https://ssl.gstatic.com https://*.ngrok-free.app;
+             connect-src 'self' https://*.ngrok-free.app wss://*.ngrok-free.app;
+             img-src 'self' data: blob:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline' 'unsafe-eval';
+             media-src *">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f2e6d7;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #350410;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      background-color: #999;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Enter Cashier Verification Code</h2>
+    <input type="text" id="codeInput" placeholder="Enter 6-digit code" maxlength="6" />
+    <div id="statusMsg"></div>
+    <button id="verify-btn">Verify & Generate Receipt</button>
+    <button class="back-btn" onclick="window.location.href='customer.html'">← Back</button>
+  </div>
+  <script src="js/config.js"></script>
+  <script>
+    const BASE_URL = "https://18ae859f8511.ngrok-free.app"; // change when ngrok URL changes
+
+    document.getElementById("verify-btn").addEventListener("click", () => {
+      const enteredCode = document.getElementById("codeInput").value.trim();
+      const statusMsg = document.getElementById("statusMsg");
+      statusMsg.textContent = "";
+      statusMsg.className = "";
+
+      if (!/^\d{6}$/.test(enteredCode)) {
+        statusMsg.textContent = "Please enter a valid 6-digit code.";
+        statusMsg.className = "error";
+        return;
+      }
+
+      const txn = JSON.parse(localStorage.getItem("pendingTransaction"));
+      if (!txn || !txn.mobile) {
+        statusMsg.textContent = "No transaction data found.";
+        statusMsg.className = "error";
+        return;
+      }
+
+      // Verify cashier code
+      fetch(`${BASE_URL}/verify-code/${txn.mobile}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.code === enteredCode) {
+            // Save purchase
+            fetch(`${BASE_URL}/purchase`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...txn, cashierCode: enteredCode })
+            })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  statusMsg.textContent = "Purchase successful! Generating receipt...";
+                  statusMsg.className = "success";
+                  setTimeout(() => {
+                    window.location.href = "receipt.html";
+                  }, 1500);
+                } else {
+                  statusMsg.textContent = "Failed to save purchase.";
+                  statusMsg.className = "error";
+                }
+              });
+          } else {
+            statusMsg.textContent = "Incorrect code. Please try again.";
+            statusMsg.className = "error";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          statusMsg.textContent = "Error verifying code. Please try again.";
+          statusMsg.className = "error";
+        });
+    });
+  </script>
+  <script>
+    fetch(`${backendBaseURL}/purchase-history`)
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(err => console.error(err));
+  </script>
+</body>
+
+</html>
