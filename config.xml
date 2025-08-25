@@ -14,8 +14,10 @@
     <content src="CustomerLogin.html" />
 
     <!-- Whitelist Rules -->
-    <access origin=" https://00abfc9749c2.ngrok-free.app/*" />
-    <allow-navigation href=" https://00abfc9749c2.ngrok-free.app/*" />
+
+    <!-- Allow your Render backend -->
+    <access origin="https://smart-cart-app-h47v.onrender.com/*" />
+    <allow-navigation href="https://smart-cart-app-h47v.onrender.com/*" />
 
     <!-- Allow localhost for laptop testing -->
     <access origin="http://127.0.0.1:5000/*" />
@@ -27,10 +29,6 @@
     <!-- Allow LAN IP ranges -->
     <allow-navigation href="http://10.*/*" />
     <allow-navigation href="http://192.168.*/*" />
-
-    <!-- Wildcard ngrok domains -->
-    <allow-navigation href="https://*.ngrok-free.app/*" />
-    <allow-navigation href="https://*.ngrok.io/*" />
 
     <!-- Fallback allow all -->
     <access origin="https://*/*" />
