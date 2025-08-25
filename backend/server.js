@@ -7,7 +7,7 @@ const { generateCashierCode } = require('./verifyCode');
 
 // Models - Ensure filenames exactly match these imports (case-sensitive)
 const Product = require('./models/Product');
-const Customer = require('./models/Customer');
+const Customer = require('./models/customer');
 const Purchase = require('./models/PurchaseHistory');
 const CashIntent = require('./models/CashIntent');
 const CashierCodeHistory = require('./models/CashierCodeHistory');
