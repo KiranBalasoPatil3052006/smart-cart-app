@@ -5,11 +5,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { generateCashierCode } = require('./verifyCode');
 
-// Models
+// Models - Ensure filenames exactly match these imports (case-sensitive)
 const Product = require('./models/Product');
-const Customer = require('./models/customer');
+const Customer = require('./models/Customer');
 const Purchase = require('./models/PurchaseHistory');
-
 const CashIntent = require('./models/CashIntent');
 const CashierCodeHistory = require('./models/CashierCodeHistory');
 
@@ -17,9 +16,9 @@ const CashierCodeHistory = require('./models/CashierCodeHistory');
 const adminRoute = require('./routes/admin');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// CORS: allow requests from localhost and all ngrok domains (free or reserved)
+// CORS configuration
 app.use(
   cors({
     origin: [
@@ -28,29 +27,29 @@ app.use(
       'http://localhost:5000',
       'http://127.0.0.1:5000',
       /https:\/\/.*\.ngrok-free\.app$/,
-      /https:\/\/.*\.ngrok\.io$/
+      /https:\/\/.*\.ngrok\.io$/,
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Serve Cordova/frontend files if needed
+// Serve frontend static files - update if your www folder location changes
 app.use(express.static(path.join(__dirname, '../www')));
 
-// MongoDB connection
+// Connect to MongoDB using connection string from environment variable
 mongoose
-  .connect(' ', {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB error:', err));
 
-// Optional root route
+// Root route serving the main frontend page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../www', 'CustomerLogin.html'));
 });
@@ -70,7 +69,7 @@ app.get('/product/:barcode', async (req, res) => {
   }
 });
 
-// Add customer
+// Add or update customer
 app.post('/customer', async (req, res) => {
   const { name, mobile, email } = req.body;
   if (!name || !mobile || !email) {
@@ -82,7 +81,7 @@ app.post('/customer', async (req, res) => {
       { name, mobile, email },
       { upsert: true, new: true }
     );
-    res.json({ success: true, message: "Customer saved" });
+    res.json({ success: true, message: 'Customer saved' });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Database error', error: err.message });
   }
@@ -110,7 +109,7 @@ app.post('/purchase', async (req, res) => {
       mobile,
       products,
       paymentMethod,
-      cashierCode: paymentMethod === 'cash' ? cashierCode : null
+      cashierCode: paymentMethod === 'cash' ? cashierCode : null,
     });
 
     if (paymentMethod === 'cash') {
@@ -169,7 +168,7 @@ app.post('/cash-intent', async (req, res) => {
         mobile,
         cashierCode,
         date: new Date(),
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
       { upsert: true, new: true }
     );
@@ -232,8 +231,8 @@ app.get('/cashier-code-history', async (req, res) => {
 // Admin routes
 app.use('/admin', adminRoute);
 
-// Listen on all interfaces for both mobile and laptop access
+// Listen on all interfaces for mobile & laptop access
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Local: http://127.0.0.1:${PORT}`);
-  console.log("🌐 Ngrok and LAN supported (check your ngrok URL)");
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log('🌐 Ngrok and LAN supported (check your ngrok URL)');
 });
