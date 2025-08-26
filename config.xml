@@ -13,13 +13,7 @@
     <!-- Start page -->
     <content src="CustomerLogin.html" />
 
-<<<<<<< HEAD
     <!-- Whitelist Rules to allow communication with your Render backend -->
-=======
-    <!-- Whitelist Rules -->
-
-    <!-- Allow your Render backend -->
->>>>>>> 9139e731359f92d87efcecce93a11809a25c2142
     <access origin="https://smart-cart-app-h47v.onrender.com/*" />
     <allow-navigation href="https://smart-cart-app-h47v.onrender.com/*" />
 
@@ -29,15 +23,12 @@
     <access origin="http://localhost:5000/*" />
     <allow-navigation href="http://localhost:5000/*" />
 
-<<<<<<< HEAD
     <!-- Fallback allow all (last resort, not recommended for production) -->
-=======
     <!-- Allow LAN IP ranges -->
     <allow-navigation href="http://10.*/*" />
     <allow-navigation href="http://192.168.*/*" />
 
     <!-- Fallback allow all -->
->>>>>>> 9139e731359f92d87efcecce93a11809a25c2142
     <access origin="https://*/*" />
     <access origin="http://*/*" />
 
