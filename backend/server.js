@@ -5,7 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { generateCashierCode } = require('./verifyCode');
 
-// Models - Ensure filenames exactly match these imports (case-sensitive)
+// Models (ensure file names and casing match your actual files)
 const Product = require('./models/Product');
 const Customer = require('./models/customer');
 const Purchase = require('./models/PurchaseHistory');
@@ -18,29 +18,30 @@ const adminRoute = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration
-app.use(
-  cors({
-    origin: [
-      'http://localhost:8000',
-      'http://127.0.0.1:8000',
-      'http://localhost:5000',
-      'http://127.0.0.1:5000',
-      /https:\/\/.*\.ngrok-free\.app$/,
-      /https:\/\/.*\.ngrok\.io$/,
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true,
-  })
-);
+// Wide CORS setup for mobile app, frontend, and local dev
+app.use(cors({
+  origin: [
+    'https://smart-cart-app-h47v.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'http://192.168.*.*',
+    'http://10.*.*.*',
+    /https:\/\/.*\.ngrok-free\.app$/,
+    /https:\/\/.*\.ngrok\.io$/
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Serve frontend static files - update if your www folder location changes
+// Serve frontend static files (update path if www folder moves)
 app.use(express.static(path.join(__dirname, '../www')));
 
-// Connect to MongoDB using connection string from environment variable
+// Connect to MongoDB via connection string from env variable
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -49,14 +50,13 @@ mongoose
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB error:', err));
 
-// Root route serving the main frontend page
+// Root route: serves frontend entry page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../www', 'CustomerLogin.html'));
 });
 
 /* === API ENDPOINTS === */
 
-// Product by barcode
 app.get('/product/:barcode', async (req, res) => {
   try {
     const product = await Product.findOne({ barcode: req.params.barcode });
@@ -69,7 +69,6 @@ app.get('/product/:barcode', async (req, res) => {
   }
 });
 
-// Add or update customer
 app.post('/customer', async (req, res) => {
   const { name, mobile, email } = req.body;
   if (!name || !mobile || !email) {
@@ -87,7 +86,6 @@ app.post('/customer', async (req, res) => {
   }
 });
 
-// Get all customers
 app.get('/customers', async (req, res) => {
   try {
     const customers = await Customer.find().sort({ createdAt: -1 });
@@ -97,7 +95,6 @@ app.get('/customers', async (req, res) => {
   }
 });
 
-// Save purchase
 app.post('/purchase', async (req, res) => {
   const { name, mobile, email, products, paymentMethod, cashierCode } = req.body;
   if (!name || !mobile || !products || !paymentMethod) {
@@ -111,11 +108,9 @@ app.post('/purchase', async (req, res) => {
       paymentMethod,
       cashierCode: paymentMethod === 'cash' ? cashierCode : null,
     });
-
     if (paymentMethod === 'cash') {
       await CashIntent.deleteOne({ mobile });
     }
-
     await purchase.save();
     res.json({ success: true, message: 'Purchase saved' });
   } catch (err) {
@@ -123,7 +118,6 @@ app.post('/purchase', async (req, res) => {
   }
 });
 
-// Purchase history
 app.get('/purchase-history', async (req, res) => {
   try {
     const history = await Purchase.find().sort({ date: -1 });
@@ -133,7 +127,6 @@ app.get('/purchase-history', async (req, res) => {
   }
 });
 
-// Cash purchases
 app.get('/purchases/cash', async (req, res) => {
   try {
     const cashPurchases = await Purchase.find({ paymentMethod: 'cash' }).sort({ date: -1 });
@@ -143,7 +136,6 @@ app.get('/purchases/cash', async (req, res) => {
   }
 });
 
-// Online purchases
 app.get('/purchases/online', async (req, res) => {
   try {
     const onlinePurchases = await Purchase.find({ paymentMethod: 'online' }).sort({ date: -1 });
@@ -153,7 +145,6 @@ app.get('/purchases/online', async (req, res) => {
   }
 });
 
-// Cash intent (generate cashier code)
 app.post('/cash-intent', async (req, res) => {
   const { name, mobile } = req.body;
   if (!name || !mobile) {
@@ -179,7 +170,6 @@ app.post('/cash-intent', async (req, res) => {
   }
 });
 
-// Active cash intents
 app.get('/cash-intents', async (req, res) => {
   try {
     const intents = await CashIntent.find().sort({ date: -1 });
@@ -189,7 +179,6 @@ app.get('/cash-intents', async (req, res) => {
   }
 });
 
-// Verify cashier code
 app.post('/verify-cashier-code', async (req, res) => {
   const { mobile, cashierCode } = req.body;
   if (!mobile || !cashierCode) {
@@ -205,20 +194,16 @@ app.post('/verify-cashier-code', async (req, res) => {
       return res.status(401).json({ success: false, message: '❌ Code expired' });
     }
     await CashIntent.deleteOne({ mobile });
-
-    // Update CashierCodeHistory to mark as verified
     await CashierCodeHistory.updateOne(
       { mobile, cashierCode: String(cashierCode), verified: false },
       { $set: { verified: true, verifiedAt: new Date() } }
     );
-
     res.json({ success: true, message: '✅ Code verified' });
   } catch (err) {
     res.status(500).json({ success: false, message: '❌ Server error', error: err.message });
   }
 });
 
-// Cashier code history
 app.get('/cashier-code-history', async (req, res) => {
   try {
     const history = await CashierCodeHistory.find().sort({ createdAt: -1 });
@@ -231,7 +216,7 @@ app.get('/cashier-code-history', async (req, res) => {
 // Admin routes
 app.use('/admin', adminRoute);
 
-// Listen on all interfaces for mobile & laptop access
+// Listen on all interfaces
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log('🌐 Ngrok and LAN supported (check your ngrok URL)');
