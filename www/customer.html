@@ -2,350 +2,93 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Cart</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://unpkg.com/@ericblade/quagga2@1.2.6/dist/quagga.min.js"></script>
-  <link rel="stylesheet" href="CustomerStyle.css" />
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Cart - Scan Products</title>
+    <link rel="stylesheet" href="CustomerStyle.css" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
+    <!-- Load config and scanner logic -->
+    <script src="js/config.js"></script>
+    <script src="js/customerScanner.js"></script>
+    <style>
+        #messageBox {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: red;
+        }
 
-  <!-- Load config.js first for backend URL -->
-  <script src="js/config.js"></script>
-
-  <!-- Content Security Policy -->
- <meta http-equiv="Content-Security-Policy" content="
-  connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
-
-  <style>
-    #messageBox {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      color: red;
-    }
-
-    #messageBox.success {
-      color: green;
-    }
-  </style>
+        #messageBox.success {
+            color: green;
+        }
+    </style>
 </head>
 
 <body>
-  <center>
-    <h1 class="heading">Smart Cart</h1>
-  </center>
-
-  <div class="container">
-    <div id="messageBox"></div>
-
-    <!-- Sidebar menu -->
-    <div>
-      <div class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-      <nav id="sideMenu">
-        <ul>
-          <li>Home</li>
-          <li>About Us</li>
-          <li>Contact</li>
-          <li onclick="MovetoExit()">Exit</li>
-        </ul>
-      </nav>
-    </div>
-
-    <div class="page">
-      <!-- Customer Info -->
-      <div id="customer-info"
-        style="border-radius: 10px; font-size: 1.1rem; font-weight: 500; color: #350410; border: #350410 2px solid;">
-        <table style="background-color: white; border-radius: 10px; border: none; border-collapse: collapse;">
-          <tr>
-            <td><strong>Name:</strong></td>
-            <td><span id="cust-name"></span></td>
-          </tr>
-          <tr>
-            <td><strong>Mobile:</strong></td>
-            <td><span id="cust-mobile"></span></td>
-          </tr>
-          <tr>
-            <td><strong>Email:</strong></td>
-            <td><span id="cust-email"></span></td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- Scanner -->
-      <div id="scanner-container" style="display: none;">
-        <video id="video" width="100%" autoplay></video>
-      </div>
-
-      <!-- Product List -->
-      <div class="list-content">
-        <h3 class="list-head">Product List</h3>
-        <table id="product-table" style="border-radius: 10px; border: none; border-collapse: collapse;">
-          <thead>
-            <tr>
-              <th>Sno</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Qty</th>
-              <th>Total</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="product-list"></tbody>
-        </table>
-        <h3 class="list-head">Total: ₹<span id="total-amount">0.00</span></h3>
-
-        <div class="scan-buttons">
-          <button id="scan-btn">Start Scanning Product</button>
-          <button id="stop-scan-btn" style="display: none;">Stop Scanning</button>
+    <center>
+        <h1 class="heading">Smart Cart</h1>
+    </center>
+    <div class="container">
+        <div id="messageBox"></div>
+        <div>
+            <div class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+            <nav id="sideMenu">
+                <ul>
+                    <li>Home</li>
+                    <li>About Us</li>
+                    <li>Contact</li>
+                    <li onclick="MovetoExit()">Exit</li>
+                </ul>
+            </nav>
         </div>
-
-        <div class="payment-buttons" id="payment-buttons" style="display: none;">
-          <button onclick="handleCashPay()" id="cash-btn">Cash Pay</button>
-          <button onclick="handleOnlinePay()" id="online-btn">Online Pay</button>
+        <div class="page">
+            <div id="customer-info"
+                style="border-radius: 10px; font-size: 1.1rem; font-weight: 500; color: #350410; border: #350410 2px solid;">
+                <table style="background-color: white; border-radius: 10px; border: none; border-collapse: collapse;">
+                    <tr>
+                        <td><strong>Name:</strong></td>
+                        <td><span id="cust-name"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mobile:</strong></td>
+                        <td><span id="cust-mobile"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td><span id="cust-email"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="list-content">
+                <h3 class="list-head">Product List</h3>
+                <table id="product-table" style="border-radius: 10px; border: none; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Sno</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list"></tbody>
+                </table>
+                <h3 class="list-head">Total: ₹<span id="total-amount">0.00</span></h3>
+                <div class="scan-buttons">
+                    <button id="scan-btn">Start Scanning Product</button>
+                    <button id="stop-scan-btn" style="display:none;">Stop Scanning</button>
+                </div>
+                <div class="payment-buttons" id="payment-buttons" style="display:none;">
+                    <button onclick="handleCashPay()" id="cash-btn">Cash Pay</button>
+                    <button onclick="handleOnlinePay()" id="online-btn">Online Pay</button>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <!-- Cashier Verification -->
-      <div id="verify-section" style="display: none; margin-top: 20px;">
-        <label for="cashier-code">Enter Cashier Code:</label>
-        <input type="text" id="verify-cashier-code" placeholder="Cashier Code" required />
-        <button onclick="verifyCashierCodeAndDownload()">Verify</button>
-        <button onclick="backToProductList()">Back</button>
-      </div>
     </div>
-  </div>
-
-  <script>
-    // Retrieve customer details from localStorage
-    const customerName = localStorage.getItem("customerName");
-    const customerNumber = localStorage.getItem("customerNumber");
-    const customerEmail = localStorage.getItem("customerEmail");
-
-    // Display customer details in UI
-    document.getElementById("cust-name").textContent = customerName || "Unknown";
-    document.getElementById("cust-mobile").textContent = customerNumber || "Unknown";
-    document.getElementById("cust-email").textContent = customerEmail || "Unknown";
-
-    // Show messages
-    function showMessage(msg, type = "error") {
-      const box = document.getElementById("messageBox");
-      box.textContent = msg;
-      box.className = type === "success" ? "success" : "";
-    }
-
-    // Navigation helpers
-    function MovetoExit() {
-      window.location.href = "CustomerLogin.html";
-    }
-    function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("active");
-      document.querySelector(".menu-toggle").classList.toggle("open");
-    }
-
-    // Scanned products store
-    const scannedProducts = {};
-    let lastScannedCode = null,
-      scanCooldown = false;
-
-    const scanBtn = document.getElementById('scan-btn');
-    const stopScanBtn = document.getElementById('stop-scan-btn');
-    const scannerContainer = document.getElementById('scanner-container');
-    const productList = document.getElementById('product-list');
-
-    scanBtn.addEventListener('click', async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        scannerContainer.style.display = 'block';
-        scanBtn.style.display = 'none';
-        stopScanBtn.style.display = 'inline-block';
-        startScanner();
-      } catch (err) {
-        showMessage("Camera access denied or not available.");
-      }
-    });
-
-    stopScanBtn.addEventListener('click', () => {
-      stopScanner();
-      scannerContainer.style.display = 'none';
-      scanBtn.style.display = 'inline-block';
-      stopScanBtn.style.display = 'none';
-    });
-
-    function startScanner() {
-      Quagga.init({
-        inputStream: {
-          name: "Live",
-          type: "LiveStream",
-          target: scannerContainer,
-          constraints: { facingMode: "environment" }
-        },
-        decoder: { readers: ["upc_reader", "ean_reader", "code_128_reader"] }
-      }, err => {
-        if (err) {
-          showMessage("Scanner init error: " + err);
-          return;
-        }
-        Quagga.start();
-      });
-      Quagga.onDetected(onDetectedHandler);
-    }
-    function stopScanner() {
-      Quagga.stop();
-      Quagga.offDetected(onDetectedHandler);
-    }
-
-    function onDetectedHandler(result) {
-      const code = result.codeResult.code;
-      if (scanCooldown || code === lastScannedCode) return;
-      scanCooldown = true;
-      lastScannedCode = code;
-      fetchProduct(code);
-      setTimeout(() => scanCooldown = false, 1000);
-    }
-
-    function fetchProduct(barcode) {
-      fetch(`${backendBaseURL}/product/${barcode}`)
-        .then(res => res.json())
-        .then(resData => {
-          if (!resData.success || !resData.product) {
-            return showMessage("Product not found.");
-          }
-          const product = resData.product;
-          if (scannedProducts[barcode]) {
-            scannedProducts[barcode].quantity += 1;
-          } else {
-            scannedProducts[barcode] = { ...product, quantity: 1, barcode };
-          }
-          renderProductList();
-        })
-        .catch(() => showMessage("Error fetching product."));
-    }
-
-    function renderProductList() {
-      productList.innerHTML = '';
-      let grandTotal = 0;
-      Object.values(scannedProducts).forEach((p, i) => {
-        const total = p.price * p.quantity;
-        grandTotal += total;
-        productList.innerHTML += `
-          <tr>
-            <td>${i + 1}</td><td>${p.name}</td><td>₹${p.price}</td>
-            <td>
-              <div class="qty-wrapper">
-                <button onclick="updateQty('${p.barcode}', -1)">-</button>
-                <span>${p.quantity}</span>
-                <button onclick="updateQty('${p.barcode}', 1)">+</button>
-              </div>
-            </td>
-            <td>₹${total}</td>
-            <td><button onclick="removeProduct('${p.barcode}')">Delete</button></td>
-          </tr>`;
-      });
-      document.getElementById('total-amount').textContent = grandTotal.toFixed(2);
-      document.getElementById("payment-buttons").style.display = Object.keys(scannedProducts).length > 0 ? "flex" : "none";
-    }
-
-    function updateQty(barcode, change) {
-      if (scannedProducts[barcode]) {
-        scannedProducts[barcode].quantity += change;
-        if (scannedProducts[barcode].quantity <= 0) delete scannedProducts[barcode];
-        renderProductList();
-      }
-    }
-
-    function removeProduct(barcode) {
-      delete scannedProducts[barcode];
-      renderProductList();
-    }
-
-    async function savePurchase(paymentMethod, cashierCode = '') {
-      const products = Object.values(scannedProducts).map(p => ({
-        barcode: p.barcode, name: p.name, price: p.price, quantity: p.quantity
-      }));
-      const payload = {
-        name: customerName,
-        mobile: customerNumber,
-        email: customerEmail,
-        products,
-        paymentMethod,
-        cashierCode
-      };
-      await fetch(`${backendBaseURL}/purchase`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-    }
-
-    async function handleCashPay() {
-      const response = await fetch(`${backendBaseURL}/cash-intent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: customerName, mobile: customerNumber })
-      });
-      const result = await response.json();
-      if (result.success) {
-        localStorage.setItem("expectedCashierCode", result.cashierCode);
-        document.querySelector('.list-content').style.display = 'none';
-        document.getElementById('verify-section').style.display = 'block';
-        document.getElementById('scanner-container').style.display = 'none';
-      } else {
-        showMessage("Failed to initiate cash payment.");
-      }
-    }
-
-    function backToProductList() {
-      document.querySelector('.list-content').style.display = 'block';
-      document.getElementById('scanner-container').style.display = 'block';
-      document.getElementById('verify-section').style.display = 'none';
-    }
-
-    async function verifyCashierCodeAndDownload() {
-      const enteredCode = document.getElementById("verify-cashier-code").value;
-      const response = await fetch(`${backendBaseURL}/verify-cashier-code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobile: customerNumber, cashierCode: enteredCode })
-      });
-      const result = await response.json();
-      if (result.success) {
-        await savePurchase("cash", enteredCode);
-        await generatePDFReceipt();
-        showMessage("Payment verified! Receipt downloaded.", "success");
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        showMessage(result.message);
-      }
-    }
-
-    async function handleOnlinePay() {
-      const total = document.getElementById('total-amount').textContent;
-      window.location.href = `upi://pay?pa=merchant@upi&pn=SmartCart&am=${total}&cu=INR`;
-      setTimeout(async () => {
-        await savePurchase("online");
-        await generatePDFReceipt();
-        showMessage("Online payment successful. Receipt downloaded.", "success");
-      }, 5000);
-    }
-
-    async function generatePDFReceipt() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Smart Cart Receipt", 10, 10);
-      doc.text(`Name: ${customerName}`, 10, 20);
-      doc.text(`Mobile: ${customerNumber}`, 10, 30);
-      doc.text(`Email: ${customerEmail}`, 10, 40);
-      let y = 50;
-      Object.values(scannedProducts).forEach(p => {
-        doc.text(`${p.name} - Qty: ${p.quantity} - ₹${p.price * p.quantity}`, 10, y);
-        y += 10;
-      });
-      doc.save("receipt.pdf");
-    }
-  </script>
 </body>
 
 </html>

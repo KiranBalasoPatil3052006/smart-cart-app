@@ -2,255 +2,192 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Cart Login</title>
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Cart Login</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <meta http-equiv="Content-Security-Policy" content="
+    connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
+    <script src="js/config.js"></script>
+    <script src="js/customerLogin.js"></script>
+    <!-- (your full CSS from previous code) -->
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-  <!-- ✅ CSP updated for ngrok & camera -->
-<meta http-equiv="Content-Security-Policy" content="
-  connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f2e6d7;
+            font-size: larger;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
+        .container {
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
+        .container img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+        }
 
-  <!-- Always load config.js first -->
-  <script src="js/config.js"></script>
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d4c1aa;
+            width: 100%;
+            max-width: 400px;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+        .form-heading {
+            text-align: center;
+            color: #350410;
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background-color: #f2e6d7;
-      font-size: larger;
-      font-weight: 400;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+        label {
+            color: #3d2c29;
+            font-weight: bold;
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+        }
 
-    .container {
-      width: 100%;
-      padding: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"] {
+            width: 100%;
+            height: 40px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #fdf9f3;
+            margin-top: 5px;
+        }
 
-    .container img {
-      max-width: 150px;
-      height: auto;
-      margin-bottom: 15px;
-    }
+        .user-login {
+            width: 100%;
+            height: 45px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #350410;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    .login-container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      border: 1px solid #d4c1aa;
-      width: 100%;
-      max-width: 400px;
-    }
+        .user-login:hover {
+            background-color: #5b2718;
+        }
 
-    .form-heading {
-      text-align: center;
-      color: #350410;
-      font-weight: 600;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
+        .admin-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #8b5e3c;
+            text-align: center;
+        }
 
-    label {
-      color: #3d2c29;
-      font-weight: bold;
-      display: block;
-      text-align: left;
-      margin-top: 10px;
-    }
+        .admin-link a {
+            color: #350410;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-    input[type="text"],
-    input[type="tel"],
-    input[type="email"] {
-      width: 100%;
-      height: 40px;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background-color: #fdf9f3;
-      margin-top: 5px;
-    }
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
 
-    .user-login {
-      width: 100%;
-      height: 45px;
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: bold;
-      background-color: #350410;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+        #messageBox {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            display: none;
+            border-radius: 6px;
+        }
 
-    .user-login:hover {
-      background-color: #5b2718;
-    }
+        #messageBox.ok {
+            color: #155724;
+            background-color: #e7f7ec;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
 
-    .admin-link {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #8b5e3c;
-      text-align: center;
-    }
+        #messageBox.err {
+            color: #721c24;
+            background-color: #fdecea;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
 
-    .admin-link a {
-      color: #350410;
-      text-decoration: none;
-      font-weight: bold;
-    }
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+            }
 
-    .admin-link a:hover {
-      text-decoration: underline;
-    }
+            .form-heading {
+                font-size: 20px;
+            }
 
-    #messageBox {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      padding: 8px;
-      display: none;
-      border-radius: 6px;
-    }
+            input[type="text"],
+            input[type="tel"],
+            input[type="email"] {
+                font-size: 14px;
+            }
 
-    #messageBox.ok {
-      color: #155724;
-      background-color: #e7f7ec;
-      border: 1px solid #c3e6cb;
-      display: block;
-    }
+            .user-login {
+                font-size: 14px;
+                height: 40px;
+            }
 
-    #messageBox.err {
-      color: #721c24;
-      background-color: #fdecea;
-      border: 1px solid #f5c6cb;
-      display: block;
-    }
-
-    @media (max-width: 480px) {
-      .login-container {
-        padding: 20px;
-      }
-
-      .form-heading {
-        font-size: 20px;
-      }
-
-      input[type="text"],
-      input[type="tel"],
-      input[type="email"] {
-        font-size: 14px;
-      }
-
-      .user-login {
-        font-size: 14px;
-        height: 40px;
-      }
-
-      .container img {
-        max-width: 120px;
-      }
-    }
-  </style>
+            .container img {
+                max-width: 120px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <img src="images/cartimage.png" alt="Smart Cart Logo" />
-    <div class="login-container">
-      <form id="loginForm">
-        <div class="form-heading">Customer Signin</div>
-
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" />
-
-        <label for="number">Mobile Number:</label>
-        <input type="tel" name="number" id="number" />
-
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" />
-
-        <input type="submit" class="user-login" value="Submit" />
-
-        <div class="admin-link">
-          Are you admin? <a href="adminlogin.html">Click here</a>
+    <div class="container">
+        <img src="images/cartimage.png" alt="Smart Cart Logo" />
+        <div class="login-container">
+            <form id="loginForm">
+                <div class="form-heading">Customer Signin</div>
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name" />
+                <label for="number">Mobile Number:</label>
+                <input type="tel" name="number" id="number" />
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" />
+                <input type="submit" class="user-login" value="Submit" />
+                <div class="admin-link">
+                    Are you admin? <a href="adminlogin.html">Click here</a>
+                </div>
+                <div id="messageBox"></div>
+            </form>
         </div>
-
-        <div id="messageBox"></div>
-      </form>
     </div>
-  </div>
-
-  <script>
-    function showMsg(text, ok = true) {
-      const box = document.getElementById("messageBox");
-      box.textContent = text;
-      box.className = ok ? "ok" : "err";
-      box.style.display = "block";
-    }
-    function clearMsg() {
-      document.getElementById("messageBox").style.display = "none";
-    }
-
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      clearMsg();
-
-      const name = document.getElementById("name").value.trim();
-      const number = document.getElementById("number").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (!name || !number || !email) {
-        showMsg("All fields are required!", false);
-        return;
-      }
-
-      // Save locally
-      localStorage.setItem("customerName", name);
-      localStorage.setItem("customerNumber", number);
-      localStorage.setItem("customerEmail", email);
-
-      fetch(`${backendBaseURL}/customer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, mobile: number, email })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            showMsg("Login successful! Redirecting...", true);
-            setTimeout(() => {
-              window.location.href = "customer.html";
-            }, 800);
-          } else {
-            showMsg("Error saving customer info!", false);
-          }
-        })
-        .catch(err => {
-          console.error("Error:", err);
-          showMsg("Unable to connect to server!", false);
-        });
-    });
-  </script>
 </body>
 
 </html>

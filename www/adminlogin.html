@@ -2,240 +2,191 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login</title>
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
+    <!-- Load backend URL config first -->
+    <script src="js/config.js"></script>
+    <!-- Load page-specific JS -->
+    <script src="js/adminLogin.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-  <!-- ✅ Updated CSP for ngrok, localhost, mobile, camera -->
-<meta http-equiv="Content-Security-Policy" content="
-  connect-src 'self' https://smart-cart-app-h47v.onrender.com;">
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f2e6d7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
 
+        .container {
+            width: 90%;
+            max-width: 400px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
 
-  <!-- Always load config.js first for dynamic backend URL -->
-  <script src="js/config.js"></script>
+        .login-container {
+            background-color: #fff;
+            border: 1px solid #d4c1aa;
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+        .login-container h2 {
+            color: #350410;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+        }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2e6d7;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      flex-direction: column;
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #3d2c29;
+            font-weight: bold;
+        }
 
-    .container {
-      width: 90%;
-      max-width: 400px;
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdf9f3;
+            font-size: 16px;
+        }
 
-    img {
-      width: 150px;
-      height: auto;
-      margin-bottom: 20px;
-    }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #350410;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    .login-container {
-      background-color: #fff;
-      border: 1px solid #d4c1aa;
-      border-radius: 12px;
-      padding: 30px 25px;
-      width: 100%;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+        button:hover {
+            background-color: #5b2718;
+        }
 
-    .login-container h2 {
-      color: #350410;
-      margin-bottom: 25px;
-      text-align: center;
-      font-size: 24px;
-    }
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #8b5e3c;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-      color: #3d2c29;
-      font-weight: bold;
-    }
+        .customer-link {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
 
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #fdf9f3;
-      font-size: 16px;
-    }
+        .customer-link a {
+            color: #350410;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #350410;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+        .customer-link a:hover {
+            text-decoration: underline;
+        }
 
-    button:hover {
-      background-color: #5b2718;
-    }
+        #messageBox {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            display: none;
+            border-radius: 6px;
+        }
 
-    .footer {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      color: #8b5e3c;
-    }
+        #messageBox.ok {
+            color: #155724;
+            background-color: #e7f7ec;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
 
-    .customer-link {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 14px;
-    }
+        #messageBox.err {
+            color: #721c24;
+            background-color: #fdecea;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
 
-    .customer-link a {
-      color: #350410;
-      text-decoration: none;
-      font-weight: bold;
-    }
+        @media screen and (max-width: 480px) {
+            .login-container {
+                padding: 25px 15px;
+            }
 
-    .customer-link a:hover {
-      text-decoration: underline;
-    }
+            img {
+                width: 120px;
+            }
 
-    #messageBox {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      padding: 8px;
-      display: none;
-      border-radius: 6px;
-    }
+            .login-container h2 {
+                font-size: 20px;
+            }
 
-    #messageBox.ok {
-      color: #155724;
-      background-color: #e7f7ec;
-      border: 1px solid #c3e6cb;
-      display: block;
-    }
+            input[type="email"],
+            input[type="password"],
+            button {
+                font-size: 14px;
+            }
 
-    #messageBox.err {
-      color: #721c24;
-      background-color: #fdecea;
-      border: 1px solid #f5c6cb;
-      display: block;
-    }
-
-    @media screen and (max-width: 480px) {
-      .login-container {
-        padding: 25px 15px;
-      }
-
-      img {
-        width: 120px;
-      }
-
-      .login-container h2 {
-        font-size: 20px;
-      }
-
-      input[type="email"],
-      input[type="password"],
-      button {
-        font-size: 14px;
-      }
-
-      .footer,
-      .customer-link {
-        font-size: 13px;
-      }
-    }
-  </style>
+            .footer,
+            .customer-link {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <img src="images/cartimage.png" alt="Smart Cart Logo">
-    <div class="login-container">
-      <h2>Admin Login</h2>
-      <form id="adminLoginForm">
-        <label for="email">Email ID</label>
-        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter password" required>
-
-        <button type="submit">Login</button>
-      </form>
-
-      <div id="messageBox"></div>
-
-      <div class="footer">Only authorized admin access allowed.</div>
-      <div class="customer-link">
-        Are you a customer? <a href="CustomerLogin.html">Click here</a>
-      </div>
+    <div class="container">
+        <img src="images/cartimage.png" alt="Smart Cart Logo" />
+        <div class="login-container">
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <label for="email">Email ID</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required />
+                <button type="submit">Login</button>
+            </form>
+            <div id="messageBox"></div>
+            <div class="footer">Only authorized admin access allowed.</div>
+            <div class="customer-link">
+                Are you a customer? <a href="CustomerLogin.html">Click here</a>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <script>
-    function showMsg(text, ok = true) {
-      const box = document.getElementById("messageBox");
-      box.textContent = text;
-      box.className = ok ? "ok" : "err";
-      box.style.display = "block";
-    }
-    function clearMsg() {
-      document.getElementById("messageBox").style.display = "none";
-    }
-
-    document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      clearMsg();
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      try {
-        const res = await fetch(`${backendBaseURL}/admin/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-          showMsg(data.message || "Login successful", true);
-          setTimeout(() => { window.location.href = 'admit.html'; }, 800);
-        } else {
-          showMsg(data.message || "Invalid email or password", false);
-        }
-      } catch (error) {
-        console.error(error);
-        showMsg("Login failed. Server not reachable.", false);
-      }
-    });
-  </script>
 </body>
 
 </html>
